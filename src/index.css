@@ -1,12 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  /* ミッドトーン: 目に優しいスレートグレーベース */
-  --color-canvas: #050400;      /* 背景: 落ち着いた青みグレー */
-  --color-surface: #e3e3e3;     /* カード: 白に近いが純白ではない */
-  --color-surface-soft: #edf0f5; /* サブカード: 少し暗め */
-  --color-ink: #1e293b;         /* 文字: 深い紺グレー */
-  --color-muted: #64748b;       /* 補足文字: 中間グレー */
+  --color-canvas: #c8cdd6;      /* 背景: グレー */
+  --color-surface: #f5f5f5;     /* カード: 白に近いが少しグレー */
+  --color-surface-soft: #e0e2e6; /* サブカード: 少し暗め */
+  --color-ink: #111111;         /* 文字: 黒 */
+  --color-muted: #757575;       /* 補足文字: 中間グレー */
   --color-viral-a: #ff3d81;
   --color-viral-b: #ff8a3d;
   --color-alarm: #ff3b3b;
