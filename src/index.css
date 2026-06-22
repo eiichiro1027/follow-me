@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  /* ライトモード: 白ベース */
-  --color-canvas: #f4f6f8;
-  --color-surface: #ffffff;
-  --color-surface-soft: #f0f2f5;
-  --color-ink: #111827;
-  --color-muted: #6b7280;
+  /* ミッドトーン: 目に優しいスレートグレーベース */
+  --color-canvas: #dde3ec;      /* 背景: 落ち着いた青みグレー */
+  --color-surface: #f8fafc;     /* カード: 白に近いが純白ではない */
+  --color-surface-soft: #edf0f5; /* サブカード: 少し暗め */
+  --color-ink: #1e293b;         /* 文字: 深い紺グレー */
+  --color-muted: #64748b;       /* 補足文字: 中間グレー */
   --color-viral-a: #ff3d81;
   --color-viral-b: #ff8a3d;
   --color-alarm: #ff3b3b;
@@ -28,8 +28,8 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.12; transform: scale(1); }
-  50%       { opacity: 0.22; transform: scale(1.06); }
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50%       { opacity: 0.25; transform: scale(1.06); }
 }
 
 @keyframes rise-in {
