@@ -197,7 +197,7 @@ export default function App() {
             シナリオを選んでスタート
           </p>
           <div className="w-full flex flex-col gap-3 mt-2">
-            {scenariosData.map((s) => {
+            {scenariosData.map((s, i) => {
               const c = THEME_COLORS[s.glowBase] ?? THEME_COLORS.pink;
               return (
                 <button
@@ -207,11 +207,10 @@ export default function App() {
                   style={{ borderLeftColor: c.a, background: "var(--color-surface-soft)" }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-display font-bold text-sm text-ink">{s.title}</span>
+                    <span className="font-display font-bold text-sm text-ink">シナリオ {i + 1}</span>
                     <ChevronRight size={16} className="text-muted" />
                   </div>
                   <p className="text-[11px] text-muted mt-1">{s.description}</p>
-                  <p className="text-[10px] font-mono mt-1" style={{ color: c.a }}>{s.theme}</p>
                 </button>
               );
             })}
@@ -451,7 +450,7 @@ export default function App() {
             {scenario && screen !== "title" && screen !== "ending" && screen !== "calm" && (
               <div className="px-6 pb-2 flex items-center justify-between">
                 <span className="font-mono text-[10px] text-muted uppercase tracking-wide">
-                  {turn?.label} — {scenario.title}
+                  {turn?.label}
                 </span>
                 <span className="font-mono text-[10px] text-muted">
                   {turnIndex + 1} / {turns.length}
