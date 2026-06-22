@@ -2,7 +2,7 @@
 
 @theme {
   --color-canvas: #c8cdd6;      /* 背景: グレー */
-  --color-surface: #f0f0f0;     /* カード: より白に近い */
+  --color-surface: #f1f1f1;     /* カード: より白に近い */
   --color-surface-soft: #e0e2e6; /* サブカード: 少し暗め */
   --color-ink: #111111;         /* 文字: 黒 */
   --color-muted: #757575;       /* 補足文字: 中間グレー */
