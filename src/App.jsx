@@ -244,15 +244,10 @@ export default function App() {
           <Users size={12} style={{color:glow}}/>
           <span className="font-mono text-[10px] text-muted uppercase tracking-wide">フォロワー</span>
         </div>
-        <span className="font-display font-bold text-sm text-ink" style={{color:glow}}>
+        <span className="font-display font-bold text-sm" style={{color:glow}}>
           {sim.followers.toLocaleString()}
         </span>
-        {turn && screen==="turn" && (
-          <span className="font-mono text-[10px] text-muted">
-            ターン {turnIndex+1} / {turns.length}
-          </span>
-        )}
-        {(!turn || screen!=="turn") && <div style={{width:60}}/>}
+        <div style={{width:60}}/>
       </div>
     );
   }
@@ -356,13 +351,13 @@ export default function App() {
         <div className="flex-1 flex flex-col">
 
           {/* ===== LINEエリア ===== */}
-          <div className="px-4 pt-3 pb-4" style={{background:"#e8f5e9"}}>
+          <div className="px-4 pt-3 pb-4" style={{background:"#fef9e7"}}>
             {/* LINEヘッダー */}
             <div className="flex items-center gap-2 mb-3">
               <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{background:LINE_GREEN}}>
                 <span className="text-white font-bold" style={{fontSize:8}}>L</span>
               </div>
-              <span className="text-[10px] font-mono" style={{color:"#4a7c59"}}>トーク</span>
+              <span className="text-[10px] font-mono" style={{color:"#7d6608"}}>トーク</span>
             </div>
 
             {/* 友達のアバターとメッセージ */}
@@ -371,14 +366,14 @@ export default function App() {
                 {AVATARS.friend}
               </div>
               <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] font-medium" style={{color:"#4a7c59"}}>友人</span>
+                <span className="text-[10px] font-medium" style={{color:"#7d6608"}}>友人</span>
                 {turn.info.map((line,i)=>(
                   <div key={i} className="max-w-[240px] rounded-2xl rounded-tl-sm px-3 py-2"
                     style={{background:LINE_GREEN}}>
                     <p className="text-sm text-white leading-relaxed">{line}</p>
                   </div>
                 ))}
-                <span className="text-[9px]" style={{color:"#4a7c59"}}>たった今</span>
+                <span className="text-[9px]" style={{color:"#7d6608"}}>たった今</span>
               </div>
             </div>
           </div>
@@ -414,13 +409,16 @@ export default function App() {
                 const isSel = selected?.key===c.key;
                 return (
                   <button key={c.key} onClick={()=>setSelected(c)}
-                    className="text-left rounded-xl p-3 border transition-all"
+                    className="text-left rounded-xl p-3 border-2 transition-all"
                     style={{
-                      borderColor: isSel ? glow : "var(--color-surface-soft)",
-                      background: isSel ? "rgba(255,255,255,0.04)" : "var(--color-surface-soft)",
+                      borderColor: isSel ? glow : "#d1d5db",
+                      background: isSel ? `color-mix(in srgb, ${glow} 12%, white)` : "var(--color-surface)",
+                      boxShadow: isSel ? `0 0 0 1px ${glow}` : "none",
                     }}>
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-sm text-ink">{c.text}</span>
+                      <span className="font-semibold text-sm" style={{color: isSel ? glow : "var(--color-ink)"}}>
+                        {c.text}
+                      </span>
                     </div>
                     </button>
                 );
@@ -430,13 +428,13 @@ export default function App() {
             {/* コメント入力(Xスタイル) */}
             {!isResp && (
               <div className="flex flex-col gap-2">
-                <div className="flex gap-2 items-start">
+                <div className="flex gap-2 items-start bg-white rounded-xl p-3 border border-surface-soft">
                   <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 mt-1">
                     {AVATARS.user}
                   </div>
                   <textarea value={comment} onChange={(e)=>setComment(e.target.value)} rows={2}
                     placeholder={selected ? "コメントを追加..." : "タイトルを選んでからコメントを追加"}
-                    className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted resize-none focus:outline-none border-b border-surface-soft pb-2"/>
+                    className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted resize-none focus:outline-none"/>
                 </div>
               </div>
             )}
