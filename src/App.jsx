@@ -405,14 +405,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* 学習要素バッジ */}
-            <div className="flex">
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border"
-                style={{color:glow, borderColor:glow, background:"rgba(255,255,255,0.03)"}}>
-                {turn.learning}
-              </span>
-            </div>
-
             {/* 選択肢(シャッフル済み) */}
             <div className="flex flex-col gap-2">
               <p className="text-[11px] text-muted">
@@ -436,8 +428,7 @@ export default function App() {
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] text-muted mt-0.5">{c.desc}</p>
-                  </button>
+                    </button>
                 );
               })}
             </div>
@@ -453,19 +444,6 @@ export default function App() {
                     placeholder={selected ? "コメントを追加..." : "タイトルを選んでからコメントを追加"}
                     className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted resize-none focus:outline-none border-b border-surface-soft pb-2"/>
                 </div>
-                {selected && (
-                  <div className="bg-surface-soft rounded-xl p-2.5 flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between text-[10px] font-mono text-muted">
-                      <span>AI評価</span>
-                      <span className="text-ink font-bold">×{selected.mult} → ×{previewMult}</span>
-                    </div>
-                    <div className="h-1 rounded-full bg-canvas overflow-hidden">
-                      <div className="h-full rounded-full transition-all" style={{width:`${Math.max(4,meterPct)}%`, background:glow}}/>
-                    </div>
-                    {evaluation?.alarmHits.length>0 && <p className="text-[10px] text-muted">煽り: {evaluation.alarmHits.join("、")}</p>}
-                    {evaluation?.calmHits.length>0  && <p className="text-[10px] text-muted">慎重: {evaluation.calmHits.join("、")}</p>}
-                  </div>
-                )}
               </div>
             )}
 
