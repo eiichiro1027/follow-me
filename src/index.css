@@ -2,8 +2,8 @@
 
 @theme {
   /* ミッドトーン: 目に優しいスレートグレーベース */
-  --color-canvas: #dde3ec;      /* 背景: 落ち着いた青みグレー */
-  --color-surface: #d9d9d9;     /* カード: 白に近いが純白ではない */
+  --color-canvas: #050400;      /* 背景: 落ち着いた青みグレー */
+  --color-surface: #e3e3e3;     /* カード: 白に近いが純白ではない */
   --color-surface-soft: #edf0f5; /* サブカード: 少し暗め */
   --color-ink: #1e293b;         /* 文字: 深い紺グレー */
   --color-muted: #64748b;       /* 補足文字: 中間グレー */
