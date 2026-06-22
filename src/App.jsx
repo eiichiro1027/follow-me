@@ -356,13 +356,13 @@ export default function App() {
         <div className="flex-1 flex flex-col">
 
           {/* ===== LINEエリア ===== */}
-          <div className="px-4 pt-3 pb-4" style={{background:"#1a1e2a"}}>
+          <div className="px-4 pt-3 pb-4" style={{background:"#e8f5e9"}}>
             {/* LINEヘッダー */}
             <div className="flex items-center gap-2 mb-3">
               <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{background:LINE_GREEN}}>
                 <span className="text-white font-bold" style={{fontSize:8}}>L</span>
               </div>
-              <span className="text-[10px] font-mono text-muted">トーク</span>
+              <span className="text-[10px] font-mono" style={{color:"#4a7c59"}}>トーク</span>
             </div>
 
             {/* 友達のアバターとメッセージ */}
@@ -371,25 +371,25 @@ export default function App() {
                 {AVATARS.friend}
               </div>
               <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] text-muted font-medium">友人</span>
+                <span className="text-[10px] font-medium" style={{color:"#4a7c59"}}>友人</span>
                 {turn.info.map((line,i)=>(
                   <div key={i} className="max-w-[240px] rounded-2xl rounded-tl-sm px-3 py-2"
                     style={{background:LINE_GREEN}}>
                     <p className="text-sm text-white leading-relaxed">{line}</p>
                   </div>
                 ))}
-                <span className="text-[9px] text-muted">たった今</span>
+                <span className="text-[9px]" style={{color:"#4a7c59"}}>たった今</span>
               </div>
             </div>
           </div>
 
           {/* ===== 仕切り ===== */}
-          <div className="flex items-center gap-2 px-4 py-2" style={{background:"#0f1117"}}>
-            <div className="flex-1 h-px bg-surface-soft"/>
-            <span className="text-[10px] font-mono text-muted whitespace-nowrap">
+          <div className="flex items-center gap-2 px-4 py-2" style={{background:"#f0f2f5"}}>
+            <div className="flex-1 h-px" style={{background:"#d1d5db"}}/>
+            <span className="text-[10px] font-mono whitespace-nowrap" style={{color:"#6b7280"}}>
               {isResp ? "── 対応を選ぶ ──" : "── あなたの投稿 ──"}
             </span>
-            <div className="flex-1 h-px bg-surface-soft"/>
+            <div className="flex-1 h-px" style={{background:"#d1d5db"}}/>
           </div>
 
           {/* ===== Xエリア ===== */}
@@ -421,12 +421,6 @@ export default function App() {
                     }}>
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-sm text-ink">{c.text}</span>
-                      {c.mult && (
-                        <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full"
-                          style={{color:"#ff8a3d", background:"rgba(255,138,61,0.12)"}}>
-                          ×{c.mult}
-                        </span>
-                      )}
                     </div>
                     </button>
                 );
