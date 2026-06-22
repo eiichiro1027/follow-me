@@ -110,6 +110,7 @@ export default function App() {
   const [showDev,         setShowDev]         = useState(false);
   const [showComments,    setShowComments]    = useState(false);
   const [hasViewedComments, setHasViewedComments] = useState(false);
+  const [prevScreen,      setPrevScreen]      = useState(null); // 説明画面を開く前の画面を記録
 
   const turns      = scenario?.turns ?? [];
   const turn       = turns[turnIndex];
@@ -136,6 +137,9 @@ export default function App() {
     setHistory([]); setTurnIndex(0); setSelected(null);
     setComment(""); setEndingStep(0); setShowComments(false); setHasViewedComments(false);
   }
+
+  function openExplain() { setPrevScreen(screen); setScreen("explain"); }
+  function closeExplain() { setScreen(prevScreen ?? "title"); setPrevScreen(null); }
 
   function backToTitle() { resetState(); setScenario(null); setScreen("scenario"); }
 
@@ -212,6 +216,7 @@ export default function App() {
     // ゲーム説明画面
     if (screen === "explain") {
       const grad = `linear-gradient(90deg, ${THEME_COLORS.pink.a}, ${THEME_COLORS.pink.b})`;
+      const fromGame = prevScreen && prevScreen !== "title" && prevScreen !== "scenario";
       return (
         <div className="flex-1 flex flex-col gap-5 pt-4">
           <h2 className="font-display text-lg font-bold text-ink">このゲームについて</h2>
@@ -235,11 +240,19 @@ export default function App() {
               </p>
             </div>
           </div>
-          <button onClick={() => setScreen("scenario")}
-            className="mt-auto self-end flex items-center gap-1 font-display font-bold text-sm px-6 py-2.5 rounded-full text-canvas"
-            style={{ background: grad }}>
-            シナリオを選ぶ <ChevronRight size={16} />
-          </button>
+          <div className="mt-auto flex flex-col gap-2">
+            {fromGame && (
+              <button onClick={closeExplain}
+                className="w-full flex items-center justify-center gap-1 font-display font-bold text-sm px-6 py-2.5 rounded-full border border-surface-soft text-muted">
+                ゲームに戻る
+              </button>
+            )}
+            <button onClick={() => { resetState(); setScenario(null); setPrevScreen(null); setScreen("scenario"); }}
+              className="w-full flex items-center justify-center gap-1 font-display font-bold text-sm px-6 py-2.5 rounded-full text-canvas"
+              style={{ background: grad }}>
+              シナリオを選び直す <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
       );
     }
@@ -498,8 +511,16 @@ export default function App() {
 
         <div className="w-full rounded-[2.5rem] p-[2px]" style={{ background:`linear-gradient(160deg, ${glow}, transparent 60%)` }}>
           <div className="w-full bg-surface rounded-[2.4rem] overflow-hidden flex flex-col" style={{ minHeight:"660px" }}>
-            <div className="flex justify-center pt-3 pb-1">
+            <div className="flex justify-center items-center pt-3 pb-1 relative px-4">
               <div className="w-24 h-5 bg-canvas rounded-full" />
+              {screen !== "explain" && (
+                <button
+                  onClick={openExplain}
+                  className="absolute right-4 top-2 w-7 h-7 rounded-full flex items-center justify-center font-display font-bold text-xs text-muted border border-surface-soft bg-surface-soft hover:border-muted transition-colors"
+                >
+                  ?
+                </button>
+              )}
             </div>
 
             {scenario && screen !== "title" && screen !== "ending" && screen !== "calm" && (
