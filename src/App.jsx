@@ -175,15 +175,14 @@ export default function App() {
     ? " コメント欄を一度も確認しなかった。投稿した後、人々がどう受け取っているかを見ないまま次へ進んでいた。コメントの中には、立ち止まるためのヒントが含まれていたかもしれない。" : "";
   const finalMsg = outcome ? outcome.message + anxietyNote + commentWarn : "";
 
-  const endingItems = [
-    { icon: Users,        label: "フォロワー数",          value: `${sim.followers.toLocaleString()} 人` },
-    { icon: DollarSign,   label: "推定収益",              value: `¥${Math.round(sim.followers*0.5).toLocaleString()}` },
-    { icon: Eye,          label: "投稿閲覧数",            value: `${(sim.followers*8).toLocaleString()} 回` },
-    { icon: AlertTriangle,label: "社会的影響",            value: socialLabel },
-    { icon: MessageSquare,label: "問い合わせ増加数",      value: `${sim.social*8} 件` },
-    { icon: ShieldAlert,  label: "訂正投稿の到達率",      value: `${outcome?.reach ?? 0}%` },
-    { icon: Flame,        label: "メッセージ",            value: finalMsg },
-    { icon: Home,         label: "投稿のその後",          value: getPersonalImpact(sim.uproar) },
+  // エンディングは3ステップ:
+  // step 0 → 数字まとめ(フォロワー・閲覧数・収益)を一括表示
+  // step 1 → メッセージ
+  // step 2 → 投稿のその後
+  const endingSteps = [
+    { type: "stats" },
+    { type: "prose", icon: Flame,  label: "メッセージ",   value: finalMsg },
+    { type: "prose", icon: Home,   label: "投稿のその後", value: getPersonalImpact(sim.uproar) },
   ];
 
   // ---- 画面ごとのレンダリング ----
@@ -250,7 +249,7 @@ export default function App() {
             <button onClick={() => { resetState(); setScenario(null); setPrevScreen(null); setScreen("scenario"); }}
               className="w-full flex items-center justify-center gap-1 font-display font-bold text-sm px-6 py-2.5 rounded-full text-canvas"
               style={{ background: grad }}>
-              シナリオを選び直す <ChevronRight size={16} />
+              {fromGame ? "シナリオを選び直す" : "シナリオを選ぶ"} <ChevronRight size={16} />
             </button>
           </div>
         </div>
@@ -454,25 +453,51 @@ export default function App() {
 
     // エンディング
     if (screen === "ending") {
-      const isComplete = endingStep >= endingItems.length - 1;
+      const isComplete = endingStep >= endingSteps.length - 1;
+      const currentStep = endingSteps[endingStep];
       return (
         <div className="flex-1 flex flex-col gap-3 pt-2">
-          {endingItems.slice(0, endingStep + 1).map((item, i) => {
-            const Icon   = item.icon;
-            const isProse = item.label === "メッセージ" || item.label === "投稿のその後";
+
+          {/* step 0: 数字を一括表示 */}
+          {endingStep >= 0 && (
+            <div className="bg-surface-soft rounded-2xl p-5 flex flex-col gap-4 animate-rise-in">
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] font-mono text-muted uppercase tracking-wide">フォロワー数</span>
+                <span className="font-display text-4xl font-bold text-ink animate-count-pop">
+                  {sim.followers.toLocaleString()}
+                  <span className="text-lg ml-1">人</span>
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-canvas rounded-xl p-3 flex flex-col items-center gap-1">
+                  <Eye size={14} style={{ color: glow }} />
+                  <span className="text-[10px] font-mono text-muted">閲覧数</span>
+                  <span className="font-display text-sm font-bold text-ink">{(sim.followers*8).toLocaleString()} 回</span>
+                </div>
+                <div className="bg-canvas rounded-xl p-3 flex flex-col items-center gap-1">
+                  <DollarSign size={14} style={{ color: glow }} />
+                  <span className="text-[10px] font-mono text-muted">推定収益</span>
+                  <span className="font-display text-sm font-bold text-ink">¥{Math.round(sim.followers*0.5).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* step 1以降: メッセージ・その後を1枚ずつ */}
+          {endingStep >= 1 && endingSteps.slice(1, endingStep + 1).map((s, i) => {
+            const Icon = s.icon;
             return (
-              <div key={i} className={`rounded-2xl p-4 flex items-start gap-3 animate-rise-in ${isProse ? "border" : "bg-surface-soft"}`}
-                style={isProse ? { borderColor: glow, background:"rgba(255,255,255,0.02)" } : undefined}>
+              <div key={i} className="rounded-2xl p-4 flex items-start gap-3 border animate-rise-in"
+                style={{ borderColor: glow, background:"rgba(255,255,255,0.02)" }}>
                 <Icon size={18} style={{ color: glow }} className="mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-[10px] font-mono text-muted uppercase tracking-wide">{item.label}</p>
-                  <p className={isProse ? "text-sm text-ink leading-relaxed" : "font-display text-lg font-bold text-ink"}>
-                    {item.value}
-                  </p>
+                  <p className="text-[10px] font-mono text-muted uppercase tracking-wide">{s.label}</p>
+                  <p className="text-sm text-ink leading-relaxed mt-1">{s.value}</p>
                 </div>
               </div>
             );
           })}
+
           {!isComplete ? (
             <button onClick={() => setEndingStep((s) => s + 1)}
               className="self-end flex items-center gap-1 font-display font-bold text-sm px-6 py-2.5 rounded-full text-canvas mt-1"
@@ -481,7 +506,7 @@ export default function App() {
             </button>
           ) : (
             <div className="flex gap-2 mt-1">
-              <button onClick={() => { resetState(); setScreen("scenario"); }}
+              <button onClick={() => { resetState(); setScreen("turn"); }}
                 className="flex-1 flex items-center justify-center gap-1 font-display font-bold text-sm px-4 py-2.5 rounded-full text-canvas"
                 style={{ background: glow }}>
                 <RotateCcw size={16} /> もう一度
@@ -500,54 +525,72 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas flex items-center justify-center py-10 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-canvas flex items-center justify-center relative overflow-hidden">
       <div className="absolute w-[480px] h-[480px] rounded-full blur-3xl animate-pulse-glow pointer-events-none" style={{ background: glow }} />
 
-      <div className="relative z-10 w-full max-w-sm flex flex-col items-center">
-        <div className="flex items-center gap-2 mb-1">
-          <Sparkles size={16} style={{ color: glow }} />
-          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted">Follow Me!</span>
-        </div>
+      <div className="relative z-10 w-full flex flex-col items-center">
 
-        <div className="w-full rounded-[2.5rem] p-[2px]" style={{ background:`linear-gradient(160deg, ${glow}, transparent 60%)` }}>
-          <div className="w-full bg-surface rounded-[2.4rem] overflow-hidden flex flex-col" style={{ minHeight:"660px" }}>
-            <div className="flex justify-center items-center pt-3 pb-1 relative px-4">
-              <div className="w-24 h-5 bg-canvas rounded-full" />
-              {screen !== "explain" && (
-                <button
-                  onClick={openExplain}
-                  className="absolute right-4 top-2 w-7 h-7 rounded-full flex items-center justify-center font-display font-bold text-xs text-muted border border-surface-soft bg-surface-soft hover:border-muted transition-colors"
-                >
-                  ?
-                </button>
-              )}
-            </div>
-
-            {scenario && screen !== "title" && screen !== "ending" && screen !== "calm" && (
-              <div className="px-6 pb-2 flex items-center justify-between">
-                <span className="font-mono text-[10px] text-muted uppercase tracking-wide">
-                  {turn?.label}
-                </span>
-                <span className="font-mono text-[10px] text-muted">
-                  {turnIndex + 1} / {turns.length}
-                </span>
+        {/* PC・タブレット: スマホ型カードとして中央に表示 */}
+        <div className="hidden sm:flex flex-col items-center w-full py-10 px-4">
+          <div className="flex items-center gap-2 mb-1">
+            <Sparkles size={16} style={{ color: glow }} />
+            <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted">Follow Me!</span>
+          </div>
+          <div className="w-full max-w-sm rounded-[2.5rem] p-[2px]" style={{ background:`linear-gradient(160deg, ${glow}, transparent 60%)` }}>
+            <div className="w-full bg-surface rounded-[2.4rem] overflow-hidden flex flex-col" style={{ minHeight:"660px" }}>
+              <div className="flex justify-center items-center pt-3 pb-1 relative px-4">
+                <div className="w-24 h-5 bg-canvas rounded-full" />
+                {screen !== "explain" && (
+                  <button onClick={openExplain}
+                    className="absolute right-4 top-2 w-7 h-7 rounded-full flex items-center justify-center font-display font-bold text-xs text-muted border border-surface-soft bg-surface-soft hover:border-muted transition-colors">
+                    ?
+                  </button>
+                )}
               </div>
-            )}
-
-            <div className="flex-1 px-6 pb-6 flex flex-col">{renderScreen()}</div>
+              {scenario && screen !== "title" && screen !== "ending" && screen !== "calm" && screen !== "explain" && screen !== "scenario" && (
+                <div className="px-6 pb-2 flex items-center justify-between">
+                  <span className="font-mono text-[10px] text-muted uppercase tracking-wide">{turn?.label}</span>
+                  <span className="font-mono text-[10px] text-muted">{turnIndex + 1} / {turns.length}</span>
+                </div>
+              )}
+              <div className="flex-1 px-6 pb-6 flex flex-col overflow-y-auto">{renderScreen()}</div>
+            </div>
           </div>
+          <button onClick={() => setShowDev((v) => !v)} className="mt-4 font-mono text-[10px] text-muted underline">
+            {showDev ? "隠す" : "開発者ビューを表示"}
+          </button>
+          {showDev && (
+            <div className="mt-2 w-full max-w-sm bg-surface-soft rounded-xl p-3 font-mono text-[10px] text-muted grid grid-cols-3 gap-2">
+              <span>社会影響度 {sim.social}</span><span>不安度 {sim.anxiety}</span><span>炎上度 {sim.uproar}</span>
+            </div>
+          )}
         </div>
 
-        <button onClick={() => setShowDev((v) => !v)} className="mt-4 font-mono text-[10px] text-muted underline">
-          {showDev ? "隠す" : "開発者ビューを表示"}
-        </button>
-        {showDev && (
-          <div className="mt-2 w-full bg-surface-soft rounded-xl p-3 font-mono text-[10px] text-muted grid grid-cols-3 gap-2">
-            <span>社会影響度 {sim.social}</span>
-            <span>不安度 {sim.anxiety}</span>
-            <span>炎上度 {sim.uproar}</span>
+        {/* スマホ: 画面全体に表示 */}
+        <div className="flex sm:hidden flex-col w-full min-h-screen bg-surface">
+          <div className="flex justify-between items-center px-4 pt-4 pb-2">
+            <div className="flex items-center gap-1">
+              <Sparkles size={12} style={{ color: glow }} />
+              <span className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted">Follow Me!</span>
+            </div>
+            {scenario && screen !== "title" && screen !== "ending" && screen !== "calm" && screen !== "explain" && screen !== "scenario" && (
+              <span className="font-mono text-[9px] text-muted">{turnIndex + 1} / {turns.length}</span>
+            )}
+            {screen !== "explain" && (
+              <button onClick={openExplain}
+                className="w-7 h-7 rounded-full flex items-center justify-center font-display font-bold text-xs text-muted border border-surface-soft bg-surface-soft">
+                ?
+              </button>
+            )}
           </div>
-        )}
+          {scenario && screen !== "title" && screen !== "ending" && screen !== "calm" && screen !== "explain" && screen !== "scenario" && (
+            <div className="px-4 pb-1">
+              <span className="font-mono text-[9px] text-muted uppercase tracking-wide">{turn?.label}</span>
+            </div>
+          )}
+          <div className="flex-1 px-4 pb-6 flex flex-col overflow-y-auto">{renderScreen()}</div>
+        </div>
+
       </div>
     </div>
   );
