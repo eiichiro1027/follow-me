@@ -68,9 +68,9 @@ function getComments(scenario, turnId, record) {
 }
 
 function getPersonalImpact(uproar) {
-  if (uproar > 60) return "あなたの投稿がきっかけで、ネット上は激しい炎上に包まれた。知らない人からの心ない言葉が続き、しばらく外に出るのが怖く感じる日もあった。";
-  if (uproar > 30) return "投稿のことで、しばらくの間ぎこちない視線や心ない言葉を向けられることがあった。";
-  return "大きなトラブルにはならず、これまでと変わらない毎日を送ることができた。";
+  if (uproar > 60) return "あなたの名前と顔が、見知らぬ何万人もの人に晒された。「死ね」「消えろ」という言葉が毎日届き、学校に行くのが怖くなった。家族にも迷惑がかかり、友人にも距離を置かれた。投稿を押したあの瞬間に戻れるなら、と何度も思った。";
+  if (uproar > 30) return "しばらくの間、見知らぬアカウントから批判のメッセージが届き続けた。街で誰かに見られているような気がして、落ち着かない日が続いた。一度SNSに広まった情報は、自分では消せないと初めて実感した。";
+  return "大きな炎上にはならなかったが、それは運がよかっただけかもしれない。一度ネットに出た情報は、誰かの手元に残り続ける。「あのとき投稿しなければよかった」と思う日が来る前に、立ち止まることが大切だ。";
 }
 
 // シナリオのテーマごとにグローカラーを変える
@@ -100,7 +100,7 @@ function getGlow(screen, sim, outcomeKey, baseColor) {
 }
 
 export default function App() {
-  const [screen,          setScreen]          = useState("title");
+  const [screen,          setScreen]          = useState("title"); // title → explain → scenario → turn → result → ending
   const [scenario,        setScenario]        = useState(null);
   const [turnIndex,       setTurnIndex]       = useState(0);
   const [selected,        setSelected]        = useState(null);
@@ -137,7 +137,7 @@ export default function App() {
     setComment(""); setEndingStep(0); setShowComments(false); setHasViewedComments(false);
   }
 
-  function backToTitle() { resetState(); setScenario(null); setScreen("title"); }
+  function backToTitle() { resetState(); setScenario(null); setScreen("scenario"); }
 
   function toggleComments() { setShowComments((v) => !v); setHasViewedComments(true); }
 
@@ -168,7 +168,7 @@ export default function App() {
   const socialLabel = sim.social > 100 ? "大" : sim.social > 20 ? "中" : "小";
   const anxietyNote = sim.anxiety > 100 ? " 一部の人は、今も漠然とした不安を抱えたままだ。" : "";
   const commentWarn = !hasViewedComments && sim.uproar > 30
-    ? " 一度もコメント欄を確認しなかった。投稿を続けるときは、コメントを見て社会の受け取り方を確認することも大切だ。" : "";
+    ? " コメント欄を一度も確認しなかった。投稿した後、人々がどう受け取っているかを見ないまま次へ進んでいた。コメントの中には、立ち止まるためのヒントが含まれていたかもしれない。" : "";
   const finalMsg = outcome ? outcome.message + anxietyNote + commentWarn : "";
 
   const endingItems = [
@@ -185,24 +185,76 @@ export default function App() {
   // ---- 画面ごとのレンダリング ----
   function renderScreen() {
 
-    // タイトル: シナリオ選択
+    // タイトル画面
     if (screen === "title") {
       const grad = `linear-gradient(90deg, ${THEME_COLORS.pink.a}, ${THEME_COLORS.pink.b})`;
       return (
-        <div className="flex-1 flex flex-col items-center gap-5 py-6">
+        <div className="flex-1 flex flex-col items-center justify-center text-center gap-6 py-8">
           <h1 className="font-display text-4xl font-bold bg-clip-text text-transparent" style={{ backgroundImage: grad }}>
             Follow Me!
           </h1>
-          <p className="text-sm text-muted text-center px-4 leading-relaxed">
-            シナリオを選んでスタート
+          <p className="text-sm text-muted leading-relaxed px-4">
+            フォロワー30万人を目指す<br />SNS発信シミュレーション
           </p>
-          <div className="w-full flex flex-col gap-3 mt-2">
+          <div className="flex gap-4">
+            <span className="flex items-center gap-1 text-xs text-muted font-mono"><Heart size={14} /> 1.2k</span>
+            <span className="flex items-center gap-1 text-xs text-muted font-mono"><MessageCircle size={14} /> 84</span>
+          </div>
+          <button onClick={() => setScreen("explain")}
+            className="mt-2 font-display font-bold text-sm text-canvas px-10 py-3 rounded-full transition-transform active:scale-95"
+            style={{ background: grad }}>
+            はじめる
+          </button>
+        </div>
+      );
+    }
+
+    // ゲーム説明画面
+    if (screen === "explain") {
+      const grad = `linear-gradient(90deg, ${THEME_COLORS.pink.a}, ${THEME_COLORS.pink.b})`;
+      return (
+        <div className="flex-1 flex flex-col gap-5 pt-4">
+          <h2 className="font-display text-lg font-bold text-ink">このゲームについて</h2>
+          <div className="flex flex-col gap-3">
+            <div className="bg-surface-soft rounded-2xl p-4">
+              <p className="text-xs font-mono text-muted uppercase tracking-wide mb-2">あなたの目標</p>
+              <p className="text-sm text-ink leading-relaxed">
+                SNSでフォロワー<span className="font-bold text-ink">30万人</span>を目指して投稿を続けよう。バズればバズるほどフォロワーは増える。でも、その先に何が待っているかは…自分で確かめてほしい。
+              </p>
+            </div>
+            <div className="bg-surface-soft rounded-2xl p-4">
+              <p className="text-xs font-mono text-muted uppercase tracking-wide mb-2">遊び方</p>
+              <p className="text-sm text-ink leading-relaxed">
+                友人からのメッセージを読んで、投稿するタイトルを選ぼう。コメントを書き加えることもできる。選択肢によって投稿の拡散力が変わる。全部で数ターン、最後に結果が発表される。
+              </p>
+            </div>
+            <div className="border rounded-2xl p-4" style={{ borderColor: THEME_COLORS.pink.a, background:"rgba(255,61,129,0.05)" }}>
+              <p className="text-xs font-mono uppercase tracking-wide mb-2" style={{ color: THEME_COLORS.pink.a }}>知っておいてほしいこと</p>
+              <p className="text-sm text-ink leading-relaxed">
+                このゲームで起きることは、今この瞬間もSNS上で実際に起きている。ゲームが終わったとき、あなたが何かを感じてくれたら、それがこのゲームを作った理由だ。
+              </p>
+            </div>
+          </div>
+          <button onClick={() => setScreen("scenario")}
+            className="mt-auto self-end flex items-center gap-1 font-display font-bold text-sm px-6 py-2.5 rounded-full text-canvas"
+            style={{ background: grad }}>
+            シナリオを選ぶ <ChevronRight size={16} />
+          </button>
+        </div>
+      );
+    }
+
+    // シナリオ選択画面
+    if (screen === "scenario") {
+      const grad = `linear-gradient(90deg, ${THEME_COLORS.pink.a}, ${THEME_COLORS.pink.b})`;
+      return (
+        <div className="flex-1 flex flex-col items-center gap-5 py-6">
+          <h2 className="font-display text-lg font-bold text-ink self-start">シナリオを選ぼう</h2>
+          <div className="w-full flex flex-col gap-3">
             {scenariosData.map((s, i) => {
               const c = THEME_COLORS[s.glowBase] ?? THEME_COLORS.pink;
               return (
-                <button
-                  key={s.id}
-                  onClick={() => selectScenario(s)}
+                <button key={s.id} onClick={() => selectScenario(s)}
                   className="text-left rounded-2xl p-4 border-l-4 transition-colors"
                   style={{ borderLeftColor: c.a, background: "var(--color-surface-soft)" }}
                 >
@@ -369,10 +421,13 @@ export default function App() {
       return (
         <div className="flex-1 flex flex-col gap-4 pt-2 justify-center text-center items-center">
           <ShieldAlert size={28} style={{ color: CALM_TEAL }} />
-          <p className="text-sm text-muted">大きな炎上にはならなかった。</p>
-          <div className="bg-surface-soft rounded-2xl p-5">
+          <p className="text-sm font-bold text-ink">大きな炎上にはならなかった。</p>
+          <div className="bg-surface-soft rounded-2xl p-5 text-left">
             <p className="text-sm leading-relaxed text-ink">
-              誤りを伝えるコメントは静かに広まり、特に強い批判やパニックには発展しなかった。対応を迫られる場面は訪れなかった。
+              ただし、「大事にならなかった」と「正しかった」は違う。批判のコメントはいくつか届いていたし、スクリーンショットを撮って保存していた人もいたかもしれない。
+            </p>
+            <p className="text-sm leading-relaxed text-ink mt-3">
+              今回はたまたま大きく燃えなかっただけ。SNSでは「運よく助かった」が何度も続くとは限らない。
             </p>
           </div>
           <button onClick={proceedQuiet}
@@ -413,7 +468,7 @@ export default function App() {
             </button>
           ) : (
             <div className="flex gap-2 mt-1">
-              <button onClick={() => { resetState(); setScreen("turn"); }}
+              <button onClick={() => { resetState(); setScreen("scenario"); }}
                 className="flex-1 flex items-center justify-center gap-1 font-display font-bold text-sm px-4 py-2.5 rounded-full text-canvas"
                 style={{ background: glow }}>
                 <RotateCcw size={16} /> もう一度
